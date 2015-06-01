@@ -4,6 +4,8 @@ __author__ = 'niklas'
 This is a minimal prototype. Let's see how we can get some data, do stupid recommendations and then send it back
 """
 
+import json
+import urllib2
 
 class InputOutput():
     """
@@ -11,14 +13,34 @@ class InputOutput():
     """
 
     def __init__(self):
-        pass
+        self.teamid = "Smartass1337$$BillYo"
+        self.teampw = "12246bef4f7093a8a3d78dff975e180f"
 
     def get_context(self, run_id, interaction_id):
-        raise NotImplementedError
+        source = "http://krabspin.uci.ru.nl/getcontext.json/?i={}&runid={}&teamid={}&teampw={}".format(interaction_id,
+                                                                                                       run_id,
+                                                                                                       self.teamid,
+                                                                                                       self.teampw)
+        print("requesting url: "+source)
+        response = json.load(urllib2.urlopen(source))
+        context = response["context"]
+        print("received context: {}".format(context))
         return context
 
     def get_click(self, run_id, interaction_id, ad):
-        raise NotImplementedError
+        url = "http://krabspin.uci.ru.nl/proposePage.json/?i={}&runid={}&teamid={}&header={}&adtype={}&color={}&productid={}&price={}&teampw={}".format(
+            interaction_id,
+            run_id,
+            self.teamid,
+            ad["header"],
+            ad["adtype"],
+            ad["color"],
+            ad["productid"],
+            ad["price"],
+            self.teampw)
+        response = json.load(urllib2.urlopen(url))
+        print("got response: {}".format(response))
+        click = response["effect"]["Success"]
         return click
 
 
@@ -30,8 +52,15 @@ class Satan():
     def __init__(self):
         pass
 
-    def get_ad(self, context):
-        raise NotImplementedError
+    @staticmethod
+    def get_ad(context):
+        ad = {
+            "header": 15,
+            "adtype": "skyscraper",
+            "color": "white",
+            "productid": 17,
+            "price": 25.0
+        }
         return ad
 
     def learn_from(self, context, ad, result):
@@ -52,8 +81,8 @@ class Master():
         io = InputOutput()
         recommender = Satan()
 
-        interaction_range = range(start=1, stop=10e5+1)
-        run_id_range = range(start=1, stop=2)
+        interaction_range = range(1, int(10e5 + 1))
+        run_id_range = range(1, 2)
 
         for run_id in run_id_range:
             for interaction_id in interaction_range:
@@ -61,7 +90,6 @@ class Master():
                 ad = recommender.get_ad(context)
                 result = io.get_click(run_id, interaction_id, ad)
                 recommender.learn_from(context, ad, result)
-
 
 
 if __name__ == "__main__":
