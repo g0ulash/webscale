@@ -37,9 +37,10 @@ class Master():
                 context = io.get_context(run_id, interaction_id)
                 ad = recommender.get_ad(context)
                 #print("recommend ad: {}".format(ad))
-                result = io.get_click(run_id, interaction_id, ad)
-                profits.append(ad["price"] * result)
-                recommender.learn_from(context, ad, result)
+                user_reaction = io.get_user_reaction(run_id, interaction_id, ad)
+                # print("user reaction: {}".format(user_reaction))
+                profits.append(ad["price"] * user_reaction["effect"]["Success"])
+                recommender.learn_from(context, ad, user_reaction)
             t_run_end = time.clock()
             total_profits = sum(profits)
             print("interactions: {}, final profit:{}".format(
