@@ -45,28 +45,6 @@ class InputOutput():
         return click
 
 
-class Satan():
-    """
-    Tempt user
-    """
-
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def get_ad(context):
-        ad = {
-            "header": 15,
-            "adtype": "skyscraper",
-            "color": "white",
-            "productid": 17,
-            "price": 25.0
-        }
-        return ad
-
-    def learn_from(self, context, ad, result):
-        # Satan does not learn
-        pass
 
 
 class Master():
