@@ -31,10 +31,11 @@ class RandomRecommener(AbstractRecommender):
         pass
 
     def get_ad(self, context):
-        super(RandomRecommener, self).get_ad(context)
+        import adspace
+        return adspace.create_random()
 
     def learn_from(self, context, ad, result):
-        super(RandomRecommener, self).learn_from(context, ad, result)
+        pass
 
 
 class Satan(AbstractRecommender):
