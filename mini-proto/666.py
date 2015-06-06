@@ -1,3 +1,5 @@
+import time
+
 __author__ = 'niklas'
 
 """
@@ -60,13 +62,14 @@ class Master():
     @staticmethod
     def run():
         io = InputOutput()
-        recommender = ad_recommenders.Satan()
+        recommender = ad_recommenders.RandomRecommener()
 
-        interaction_range = range(1, int(1e2 + 1))
+        interaction_range = range(1, int(2e2 + 1))
         run_id_range = range(1, 2)
 
         for run_id in run_id_range:
             profits = []
+            t_run_start = time.clock()
             for interaction_id in interaction_range:
                 if interaction_id % 100 == 0:
                     print("Running r_id {}, interaction {}".format(run_id, interaction_id))
@@ -76,11 +79,13 @@ class Master():
                 result = io.get_click(run_id, interaction_id, ad)
                 profits.append(ad["price"] * result)
                 recommender.learn_from(context, ad, result)
+            t_run_end = time.clock()
             total_profits = sum(profits)
             print("interactions: {}, final profit:{}".format(
                 interaction_id,
                 total_profits
             ))
+            print("total time taken for this run: {}s".format(t_run_end - t_run_start))
 
 if __name__ == "__main__":
     master = Master()
