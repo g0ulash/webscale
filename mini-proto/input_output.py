@@ -3,8 +3,40 @@ import urllib2
 
 __author__ = 'niklas'
 
+import abc
+from abc import abstractmethod
 
-class NoneCache():
+
+class AbstractCache():
+    """
+    This defines the caching interface
+    """
+    __metaclass__ = abc.ABCMeta
+
+    @abstractmethod
+    def get_context(self, run_id, interaction_id):
+        """
+        Return cached context, None if not present
+        """
+        pass
+
+    @abstractmethod
+    def set_context(self, run_id, interaction_id, context):
+        pass
+
+    @abstractmethod
+    def get_click(self, run_id, interaction_id, ad):
+        """
+        For this interaction, run_id and ad, return how the user reacted earlier. None if unknown
+        """
+        pass
+
+    @abstractmethod
+    def set_user_reaction(self, run_id, interaction_id, reaction):
+        pass
+
+
+class NoneCache(AbstractCache):
 
     def __init__(self):
         pass
