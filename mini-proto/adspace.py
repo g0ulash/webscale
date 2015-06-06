@@ -11,7 +11,7 @@ possible_values = {
     "adtype": ["skyscraper", "square", "banner"],
     "color": ["green", "blue", "red", "black", "white"],
     "productid": list(range(10, 26)),
-    "price": [base + decimal/100 for base in range(0, 25) for decimal in range(0, 100)] + [25]
+    "price": [float(base) + float(decimal)/100 for base in range(0, 25) for decimal in range(0, 100)] + [25]
 }
 
 

@@ -6,6 +6,7 @@ This is a minimal prototype. Let's see how we can get some data, do stupid recom
 
 import json
 import urllib2
+import ad_recommenders
 
 
 class InputOutput():
@@ -58,7 +59,7 @@ class Master():
     @staticmethod
     def run():
         io = InputOutput()
-        recommender = Satan()
+        recommender = ad_recommenders.RandomRecommener()
 
         interaction_range = range(1, int(10e5 + 1))
         run_id_range = range(1, 2)
@@ -67,6 +68,7 @@ class Master():
             for interaction_id in interaction_range:
                 context = io.get_context(run_id, interaction_id)
                 ad = recommender.get_ad(context)
+                print("recommend ad: {}".format(ad))
                 result = io.get_click(run_id, interaction_id, ad)
                 recommender.learn_from(context, ad, result)
 
