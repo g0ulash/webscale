@@ -23,10 +23,10 @@ class InputOutput():
                                                                                                        run_id,
                                                                                                        self.teamid,
                                                                                                        self.teampw)
-        print("requesting url: " + source)
+        #print("requesting url: " + source)
         response = json.load(urllib2.urlopen(source))
         context = response["context"]
-        print("received context: {}".format(context))
+        #print("received context: {}".format(context))
         return context
 
     def get_click(self, run_id, interaction_id, ad):
@@ -40,9 +40,9 @@ class InputOutput():
             ad["productid"],
             ad["price"],
             self.teampw)
-        print("requesting url for click: {}".format(url))
+        #print("requesting url for click: {}".format(url))
         response = json.load(urllib2.urlopen(url))
-        print("got response: {}".format(response))
+        #print("got response: {}".format(response))
         click = response["effect"]["Success"]
         return click
 
@@ -62,17 +62,25 @@ class Master():
         io = InputOutput()
         recommender = ad_recommenders.Satan()
 
-        interaction_range = range(1, int(10e5 + 1))
+        interaction_range = range(1, int(1e2 + 1))
         run_id_range = range(1, 2)
 
         for run_id in run_id_range:
+            profits = []
             for interaction_id in interaction_range:
+                if interaction_id % 100 == 0:
+                    print("Running r_id {}, interaction {}".format(run_id, interaction_id))
                 context = io.get_context(run_id, interaction_id)
                 ad = recommender.get_ad(context)
-                print("recommend ad: {}".format(ad))
+                #print("recommend ad: {}".format(ad))
                 result = io.get_click(run_id, interaction_id, ad)
+                profits.append(ad["price"] * result)
                 recommender.learn_from(context, ad, result)
-
+            total_profits = sum(profits)
+            print("interactions: {}, final profit:{}".format(
+                interaction_id,
+                total_profits
+            ))
 
 if __name__ == "__main__":
     master = Master()

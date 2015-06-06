@@ -10,8 +10,11 @@ possible_values = {
     "header": [5, 15, 35],
     "adtype": ["skyscraper", "square", "banner"],
     "color": ["green", "blue", "red", "black", "white"],
-    "productid": list(range(10, 26)),
-    "price": [float(base) + float(decimal)/100 for base in range(0, 25) for decimal in range(0, 100)] + [25]
+    # not range(10, 26) due to bug on teacher side code. keep until further notice
+    "productid": list(range(10, 25)),
+    # normally: [float(base) + float(decimal)/100 for base in range(0, 25) for decimal in range(0, 100)] + [25]
+    # but: same bug, see above. keep until further notice
+    "price": list(range(0, 26))
 }
 
 
