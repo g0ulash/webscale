@@ -60,7 +60,7 @@ class Master():
     @staticmethod
     def run():
         io = InputOutput()
-        recommender = ad_recommenders.RandomRecommener()
+        recommender = ad_recommenders.Satan()
 
         interaction_range = range(1, int(10e5 + 1))
         run_id_range = range(1, 2)
