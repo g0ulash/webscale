@@ -7,6 +7,7 @@ This is a minimal prototype. Let's see how we can get some data, do stupid recom
 import json
 import urllib2
 
+
 class InputOutput():
     """
     Handle interaction with the pseudo-user
@@ -21,7 +22,7 @@ class InputOutput():
                                                                                                        run_id,
                                                                                                        self.teamid,
                                                                                                        self.teampw)
-        print("requesting url: "+source)
+        print("requesting url: " + source)
         response = json.load(urllib2.urlopen(source))
         context = response["context"]
         print("received context: {}".format(context))
