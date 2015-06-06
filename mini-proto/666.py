@@ -40,6 +40,7 @@ class InputOutput():
             ad["productid"],
             ad["price"],
             self.teampw)
+        print("requesting url for click: {}".format(url))
         response = json.load(urllib2.urlopen(url))
         print("got response: {}".format(response))
         click = response["effect"]["Success"]
