@@ -23,7 +23,7 @@ class Master():
     @staticmethod
     def run():
         io = input_output.InputOutput()
-        recommender = ad_recommenders.RandomRecommener()
+        recommender = ad_recommenders.RandomRecommender()
 
         interaction_range = range(1, int(2e2 + 1))
         run_id_range = range(1, 2)

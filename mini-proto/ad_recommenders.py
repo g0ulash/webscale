@@ -25,7 +25,7 @@ class AbstractRecommender():
         pass
 
 
-class RandomRecommener(AbstractRecommender):
+class RandomRecommender(AbstractRecommender):
 
     def __init__(self):
         pass
