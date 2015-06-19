@@ -64,7 +64,14 @@ class Satan(AbstractRecommender):
 
 
 class BetaBernoulliModel():
-    pass
+    def __init__(self):
+        pass
+
+    def sample_theta(self):
+        pass
+
+    def learn_from(self, result):
+        pass
 
 
 class BetaBernoulliThompsonSampler(AbstractRecommender):
