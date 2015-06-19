@@ -1,3 +1,5 @@
+import itertools
+
 __author__ = 'niklas'
 
 """
@@ -29,3 +31,17 @@ def create_random():
         random_sample[key] = possible_values[key][index]
     return random_sample
 
+
+def roll_adspace_into_list():
+    """
+    Take all possible combinations of ad-parameters. Put them in a list, in a. order that remains constant.
+    :return:
+    """
+    # sort because keys are not in guaranteed fixed order, which we need
+    sorted_keys = sorted(possible_values.keys())
+    list_of_value_lists = [possible_values[key] for key in sorted_keys]
+    return itertools.product(*list_of_value_lists)
+
+def ad_from_index(index):
+    all_ads = roll_adspace_into_list()
+    return all_ads[index]

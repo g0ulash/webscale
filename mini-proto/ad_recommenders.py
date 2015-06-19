@@ -1,6 +1,8 @@
 __author__ = 'niklas'
 
 import abc
+import operator
+import adspace
 
 class AbstractRecommender():
     """
@@ -59,3 +61,26 @@ class Satan(AbstractRecommender):
     def learn_from(self, context, ad, result):
         # Satan does not learn
         pass
+
+
+class BetaBernoulliModel():
+    pass
+
+
+class BetaBernoulliThompsonSampler(AbstractRecommender):
+    def get_ad(self, context):
+        theta_samples = []
+        for model in self.beta_bernoulli_models:
+            theta_samples.append(model.sample_theta())
+        max_index, max_value = max(enumerate(theta_samples), key=operator.itemgetter(1))
+        return adspace.ad_from_index(max_index)
+
+    def learn_from(self, context, ad, result):
+        model_index = adspace.ad_to_index(ad)
+        model = self.beta_bernoulli_models[model_index]
+        model.learn_from(result)
+
+    def __init__(self):
+        self.beta_bernoulli_models = []
+        for i in range(adspace.nr_unique_ads()):
+            self.beta_bernoulli_models.append(BetaBernoulliModel())
