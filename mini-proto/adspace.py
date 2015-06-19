@@ -45,3 +45,12 @@ def roll_adspace_into_list():
 def ad_from_index(index):
     all_ads = roll_adspace_into_list()
     return all_ads[index]
+
+
+def ad_to_index(ad):
+    all_ads = roll_adspace_into_list()
+    return all_ads.index(ad)
+
+
+def nr_unique_ads():
+    return len(roll_adspace_into_list())
