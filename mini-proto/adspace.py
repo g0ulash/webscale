@@ -34,13 +34,19 @@ def create_random():
 
 def roll_adspace_into_list():
     """
-    Take all possible combinations of ad-parameters. Put them in a list, in a. order that remains constant.
+    Take all possible combinations of ad-parameters. Put them in a list, in an order that remains constant.
     :return:
     """
+    def _make_dict(keys, values):
+        out = {}
+        for i, key in enumerate(keys):
+            out[key] = values[i]
+        return out
+
     # sort because keys are not in guaranteed fixed order, which we need
     sorted_keys = sorted(possible_values.keys())
     list_of_value_lists = [possible_values[key] for key in sorted_keys]
-    return itertools.product(*list_of_value_lists)
+    return (_make_dict(sorted_keys, values) for values in itertools.product(*list_of_value_lists))
 
 def ad_from_index(index):
     all_ads = roll_adspace_into_list()

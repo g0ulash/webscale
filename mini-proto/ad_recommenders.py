@@ -89,6 +89,7 @@ class BetaBinomialModel():
         :param result: 0 or 1 (no click / click)
         :return:
         """
+        result = result["effect"]["Success"]
         self.params["alpha"] += result
         self.params["beta"] += 1 - result
 
