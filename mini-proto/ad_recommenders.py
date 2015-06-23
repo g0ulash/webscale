@@ -86,7 +86,7 @@ class BetaBinomialModel():
          According to what I have found:
          alpha = alpha + result
          beta = beta + 1 - result
-        :param result: 0 or 1 (no click / click)
+        :param result: weird JSON result, 0 or 1 (no click / click) is buried in there
         :return:
         """
         result = result["effect"]["Success"]
