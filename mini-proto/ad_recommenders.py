@@ -3,6 +3,7 @@ __author__ = 'niklas'
 import abc
 import operator
 import adspace
+import numpy as np
 
 class AbstractRecommender():
     """
@@ -67,12 +68,29 @@ class BetaBinomialModel():
 
     def __init__(self, ad):
         self.ad = ad
+        self.params = {"alpha": 1.0,
+                       "beta": 1.0}
 
     def estimate_reward(self):
-        pass
+        """
+        Assume: Next reward = Single draw from Bernoulli with Theta parameter drawn from Beta distribution.
+        In this case: Theta is directly the expected value. So we just return the value from the Beta draw.
+        :return: estimated reward (0 till 1)
+        """
+        return np.random.beta(self.params["alpha"], self.params["beta"])
 
     def learn_from(self, result):
-        pass
+        """
+         When this function is called it means that the arm belonging to this model has been played
+         We need to update the alpha+beta parameters of our Beta posterior
+         According to what I have found:
+         alpha = alpha + result
+         beta = beta + 1 - result
+        :param result: 0 or 1 (no click / click)
+        :return:
+        """
+        self.params["alpha"] += result
+        self.params["beta"] += 1 - result
 
 
 class BetaBinomialThompsonSampler(AbstractRecommender):
