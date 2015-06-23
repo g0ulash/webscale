@@ -64,10 +64,11 @@ class Satan(AbstractRecommender):
 
 
 class BetaBinomialModel():
-    def __init__(self):
-        pass
 
-    def sample_theta(self):
+    def __init__(self, ad):
+        self.ad = ad
+
+    def estimate_reward(self):
         pass
 
     def learn_from(self, result):
@@ -76,18 +77,25 @@ class BetaBinomialModel():
 
 class BetaBinomialThompsonSampler(AbstractRecommender):
     def get_ad(self, context):
-        theta_samples = []
-        for model in self.beta_bernoulli_models:
-            theta_samples.append(model.sample_theta())
-        max_index, max_value = max(enumerate(theta_samples), key=operator.itemgetter(1))
-        return adspace.ad_from_index(max_index)
+        max_estimated_reward = None
+        best_model = None
+        for model in self.models:
+            if max_estimated_reward is None or model.estimate_reward() > max_estimated_reward:
+                best_model = model
+        return best_model.ad
 
     def learn_from(self, context, ad, result):
-        model_index = adspace.ad_to_index(ad)
-        model = self.beta_bernoulli_models[model_index]
+        model = self.find_model_for_ad(ad)
         model.learn_from(result)
 
     def __init__(self):
-        self.beta_bernoulli_models = []
-        for i in range(adspace.nr_unique_ads()):
-            self.beta_bernoulli_models.append(BetaBinomialModel())
+        self.models = []
+        all_ads = adspace.roll_adspace_into_list()
+        for ad in all_ads:
+            self.models.append(BetaBinomialModel(ad))
+
+    def find_model_for_ad(self, ad):
+        for model in self.models:
+            if model.ad == ad:
+                return model
+        raise ValueError
