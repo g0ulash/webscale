@@ -77,7 +77,9 @@ class BetaBinomialModel():
         In this case: Theta is directly the expected value. So we just return the value from the Beta draw.
         :return: estimated reward (0 till 1)
         """
-        return np.random.beta(self.params["alpha"], self.params["beta"])
+        reward = np.random.beta(self.params["alpha"], self.params["beta"])
+        # print("estimated reward: "+str(reward))
+        return reward
 
     def learn_from(self, result):
         """
@@ -92,6 +94,7 @@ class BetaBinomialModel():
         result = result["effect"]["Success"]
         self.params["alpha"] += result
         self.params["beta"] += 1 - result
+        # print("Updated beta params")
 
 
 class BetaBinomialThompsonSampler(AbstractRecommender):
@@ -99,8 +102,10 @@ class BetaBinomialThompsonSampler(AbstractRecommender):
         max_estimated_reward = None
         best_model = None
         for model in self.models:
-            if max_estimated_reward is None or model.estimate_reward() > max_estimated_reward:
+            estimated_reward = model.estimate_reward()
+            if max_estimated_reward is None or estimated_reward > max_estimated_reward:
                 best_model = model
+                max_estimated_reward = estimated_reward
         return best_model.ad
 
     def learn_from(self, context, ad, result):
@@ -112,6 +117,7 @@ class BetaBinomialThompsonSampler(AbstractRecommender):
         all_ads = adspace.roll_adspace_into_list()
         for ad in all_ads:
             self.models.append(BetaBinomialModel(ad))
+        print("Sampler initialized. Using "+str(len(self.models))+" models")
 
     def find_model_for_ad(self, ad):
         for model in self.models:
