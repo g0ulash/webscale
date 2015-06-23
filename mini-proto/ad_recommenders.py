@@ -63,7 +63,7 @@ class Satan(AbstractRecommender):
         pass
 
 
-class BetaBernoulliModel():
+class BetaBinomialModel():
     def __init__(self):
         pass
 
@@ -74,7 +74,7 @@ class BetaBernoulliModel():
         pass
 
 
-class BetaBernoulliThompsonSampler(AbstractRecommender):
+class BetaBinomialThompsonSampler(AbstractRecommender):
     def get_ad(self, context):
         theta_samples = []
         for model in self.beta_bernoulli_models:
@@ -90,4 +90,4 @@ class BetaBernoulliThompsonSampler(AbstractRecommender):
     def __init__(self):
         self.beta_bernoulli_models = []
         for i in range(adspace.nr_unique_ads()):
-            self.beta_bernoulli_models.append(BetaBernoulliModel())
+            self.beta_bernoulli_models.append(BetaBinomialModel())
