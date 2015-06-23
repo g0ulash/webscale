@@ -23,7 +23,7 @@ class Master():
     @staticmethod
     def run():
         io = input_output.InputOutput()
-        recommender = ad_recommenders.RandomRecommender()
+        recommender = ad_recommenders.BetaBinomialThompsonSampler()
 
         interaction_range = range(1, int(2e2 + 1))
         run_id_range = range(1, 2)
@@ -36,7 +36,7 @@ class Master():
                     print("Running r_id {}, interaction {}".format(run_id, interaction_id))
                 context = io.get_context(run_id, interaction_id)
                 ad = recommender.get_ad(context)
-                #print("recommend ad: {}".format(ad))
+                print("recommend ad: {}".format(ad))
                 user_reaction = io.get_user_reaction(run_id, interaction_id, ad)
                 # print("user reaction: {}".format(user_reaction))
                 profits.append(ad["price"] * user_reaction["effect"]["Success"])
