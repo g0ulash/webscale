@@ -6,6 +6,7 @@ import urllib2
 import ad_recommenders
 import input_output
 import time
+import pymongo
 
 __author__ = 'niklas'
 
