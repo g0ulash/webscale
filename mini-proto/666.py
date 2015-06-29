@@ -6,6 +6,8 @@ import urllib2
 import ad_recommenders
 import input_output
 import time
+import logging
+import sys
 
 __author__ = 'niklas'
 
@@ -26,6 +28,9 @@ class Master():
 
     @staticmethod
     def run():
+        li, le = Master.set_up_logging()
+
+
         io = input_output.InputOutput()
         recommender = ad_recommenders.BetaBinomialThompsonSampler()
         # recommender_price = ad_recommenders.BootStrapThompson()
@@ -67,6 +72,24 @@ class Master():
             print("total time taken for this run: {}s".format(t_run_end - t_run_start))
             for key, value in times.iteritems():
                 print("timing mean:\t{}\t\t\t{}ms".format(key, sum(value)/len(value) * 1000))
+
+    @staticmethod
+    def set_up_logging():
+        # logging setup
+        log_formatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
+        root_logger = logging.getLogger()
+        log_path = "./"
+        log_file_name = "experiments.log"
+        file_handler = logging.FileHandler("{0}/{1}.log".format(log_path, log_file_name))
+        file_handler.setFormatter(log_formatter)
+        root_logger.addHandler(file_handler)
+        console_handler = logging.StreamHandler(stream=sys.stdout)
+        console_handler.setFormatter(log_formatter)
+        root_logger.addHandler(console_handler)
+        li = root_logger.info
+        le = root_logger.error
+        return li, le
+
 
 if __name__ == "__main__":
     master = Master()
