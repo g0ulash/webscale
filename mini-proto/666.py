@@ -52,6 +52,10 @@ class Master():
 
         li("recommender module:{}".format(str(recommender)))
 
+        # variables valid for all of the experiment
+        global_profits = []
+        global_times = []
+
         for run_id in run_id_range:
             profits = []
             t_run_start = time.clock()
@@ -83,14 +87,35 @@ class Master():
                 s = time.clock()
                 recommender.learn_from(context, ad, user_reaction)
                 times["learn_from"].append(time.clock() - s)
+
+            # bookkeeping after run
             t_run_end = time.clock()
             total_profits = sum(profits)
+            t_total_run = t_run_end - t_run_start
+            global_profits.append(total_profits)
+            global_times.append(t_total_run)
+
+            # logging after run finishes
             li("finished r_id:{}".format(run_id))
-            li("total time taken for this run:{}s".format(t_run_end - t_run_start))
+            li("total time taken for this run:{}s".format(t_total_run))
             li("total profit for this run:{}".format(total_profits))
             li("timings:")
             for key, value in times.iteritems():
                 li("timing mean:\t{}\t\t\t{}ms".format(key, sum(value)/len(value) * 1000))
+
+        # bookkeeping after experiment
+        t_ex_end = time.clock()
+        t_ex_total = t_ex_end - t_ex_start
+        ex_total_profit = sum(global_profits)
+        ex_mean_profit = float(ex_total_profit) / len(global_profits)
+
+        # logging after experiment
+        li("finished this experiment")
+        li("total time taken:{}".format(t_ex_total))
+        li("total profit:{}".format(ex_total_profit))
+        li("mean profit:{}".format(ex_mean_profit))
+
+
 
     @staticmethod
     def set_up_logging():
