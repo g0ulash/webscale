@@ -1,8 +1,10 @@
 #! /usr/bin/python2
+import os
 
 import time
 import json
 import urllib2
+import datetime
 import ad_recommenders
 import input_output
 import time
@@ -28,17 +30,27 @@ class Master():
 
     @staticmethod
     def run():
+        # logging functions
         li, le = Master.set_up_logging()
 
-
+        # parts: i/o and the recommender
         io = input_output.InputOutput()
         recommender = ad_recommenders.BetaBinomialThompsonSampler()
-        # recommender_price = ad_recommenders.BootStrapThompson()
 
-        interaction_range = range(1, int(2e2 + 1))
-        run_id_range = range(1, 2)
+        # experimental ranges
+        interaction_range = list(range(1, int(2e2 + 1)))
+        run_id_range = list(range(1, 2))
 
+        # timing bins
         times = {"get_context": [], "get_ad": [], "get_user_reaction": [], "learn_from": []}
+        t_ex_start = time.clock()
+
+        li("t_ex_start:{}, first_r_id:{}, last_r_id:{}, n_interactions_per_r_id:{}".format(t_ex_start,
+                                                                                           run_id_range[0],
+                                                                                           run_id_range[-1],
+                                                                                           interaction_range[0],
+                                                                                           interaction_range[-1]))
+
         for run_id in run_id_range:
             profits = []
             t_run_start = time.clock()
@@ -75,19 +87,27 @@ class Master():
 
     @staticmethod
     def set_up_logging():
-        # logging setup
+        # get logger + formatter
         log_formatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
         root_logger = logging.getLogger()
-        log_path = "./"
-        log_file_name = "experiments.log"
-        file_handler = logging.FileHandler("{0}/{1}.log".format(log_path, log_file_name))
+
+        # file handler
+        log_path = os.path.join(".", "logs")
+        t_stamp = str(datetime.datetime.now()).replace(":", "_")
+        log_file_path = os.path.join(log_path, "experiment_"+t_stamp+".log")
+        file_handler = logging.FileHandler(log_file_path)
         file_handler.setFormatter(log_formatter)
         root_logger.addHandler(file_handler)
+
+        # console handler
         console_handler = logging.StreamHandler(stream=sys.stdout)
         console_handler.setFormatter(log_formatter)
         root_logger.addHandler(console_handler)
+
+        # convenience functions
         li = root_logger.info
         le = root_logger.error
+
         return li, le
 
 
