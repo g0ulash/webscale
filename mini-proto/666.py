@@ -1,3 +1,10 @@
+#! /usr/bin/python2
+
+import time
+import json
+import urllib2
+import ad_recommenders
+import input_output
 import time
 
 __author__ = 'niklas'
@@ -6,11 +13,7 @@ __author__ = 'niklas'
 This is a minimal prototype. Let's see how we can get some data, do stupid recommendations and then send it back
 """
 
-import json
-import urllib2
-import ad_recommenders
-import input_output
-import time
+
 
 
 class Master():
