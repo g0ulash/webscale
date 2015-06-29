@@ -15,8 +15,6 @@ This is a minimal prototype. Let's see how we can get some data, do stupid recom
 """
 
 
-
-
 class Master():
     """
     This class controls all other moving parts, passing data to where it should be
@@ -27,6 +25,11 @@ class Master():
 
     @staticmethod
     def run():
+        # db-setup
+        client = pymongo.MongoClient()
+        db = client["eden"]
+        ex_coll = db["snake_experiments"]
+
         io = input_output.InputOutput()
         recommender = ad_recommenders.BetaBinomialThompsonSampler()
         # recommender_price = ad_recommenders.BootStrapThompson()
@@ -35,7 +38,18 @@ class Master():
         run_id_range = range(1, 2)
 
         times = {"get_context": [], "get_ad": [], "get_user_reaction": [], "learn_from": []}
+        ex_id = ex_coll.insert({"t_start": time.clock(),
+                                    "n_run_ids": len(run_id_range),
+                                    "n_interactions_p_rid": len(interaction_range)})
         for run_id in run_id_range:
+            ex_coll.update(
+                {"_id": ex_id},
+                {
+                    "$set": {
+                        ""
+                    }
+                }
+            )
             profits = []
             t_run_start = time.clock()
             for interaction_id in interaction_range:
@@ -59,6 +73,11 @@ class Master():
                 recommender.learn_from(context, ad, user_reaction)
                 # recommender_price.learn_form(context, ad, user_reaction)
                 times["learn_from"].append(time.clock() - s)
+                ex_coll.update({
+                    "_id": ex_id,
+                }, {
+                    ""
+                })
             t_run_end = time.clock()
             total_profits = sum(profits)
             print("interactions: {}, final profit:{}".format(
@@ -67,7 +86,8 @@ class Master():
             ))
             print("total time taken for this run: {}s".format(t_run_end - t_run_start))
             for key, value in times.iteritems():
-                print("timing mean:\t{}\t\t\t{}ms".format(key, sum(value)/len(value) * 1000))
+                print("timing mean:\t{}\t\t\t{}ms".format(key, sum(value) / len(value) * 1000))
+
 
 if __name__ == "__main__":
     master = Master()
