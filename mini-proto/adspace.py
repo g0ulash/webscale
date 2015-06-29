@@ -11,7 +11,7 @@ import random
 possible_values = {
     "header": [5, 15, 35],
     "adtype": ["skyscraper", "square", "banner"],
-    "color": ["green", "blue", "red", "black", "white"],
+    "color": ["green", "blue", "red", "white"], # "black", will never be chosen anyway
     "productid": list(range(10, 26)),
     # normally: [float(base) + float(decimal)/100 for base in range(0, 25) for decimal in range(0, 100)] + [25]
     # but: same bug, see above. keep until further notice

@@ -4,6 +4,7 @@ import abc
 import operator
 import adspace
 import numpy as np
+from scipy.optimize import minimize_scalar
 
 class AbstractRecommender():
     """
@@ -124,3 +125,41 @@ class BetaBinomialThompsonSampler(AbstractRecommender):
             if model.ad == ad:
                 return model
         raise ValueError
+
+
+class BootStrapThompson(AbstractRecommender):
+    def get_ad(self, context, ad):
+        row = np.random.choice(self.params.shape[0])
+        beta = self.betas[row,:]
+        result = minimize_scalar(f, args=(context, ad, beta), bounds=(0,50), method="bounded")
+        return result.x
+
+    def learn_from(self, context, ad, result):
+        for i, val in enumerate(self.params):
+            if np.random.binomial(1,.5,1) == 1:
+                # Create feature vector from results should be same as in function f
+                feature_vector = []
+                x = np.matrix(feature_vector(x, context, ad)).T
+                B = np.matrix(self.betas).T
+                p = 1. / (1. + np.exp(-1*B.T*x))
+                B = B + alpha*np.float_(y-p)*x - np.insert(gamma*2*mu*B[1:],0,0)
+                self.params[i,:] = np.array(B.T)[0,:]
+
+    def __init__(self, params, J = 100):
+        self.J = J
+        self.params = params # OR SET IT OURSELVES
+        self.betas = np.zeros([self.J, len(self.params)])
+        self.alpha = 0.1
+        self.mu = 0.01
+        i = 0
+        for pars in self.params:
+            values = np.random.normal(x, .1, J)
+            self.betas[:,i] = values
+            i += 1
+
+
+def f(x, context, ad, betas):
+    # CREATE FEATURE VECTOR FROM CONTEXT AND AD
+    # SHOULD BE SAME AS IN LEARN_FROM
+    feature_vector = []
+    return -1.*x*(1./(1.*(np.exp(-1*self.feature_vector*betas.T))))

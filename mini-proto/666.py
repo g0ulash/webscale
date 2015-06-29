@@ -25,6 +25,7 @@ class Master():
     def run():
         io = input_output.InputOutput()
         recommender = ad_recommenders.BetaBinomialThompsonSampler()
+        recommender_price = ad_recommenders.BootStrapThompson()
 
         interaction_range = range(1, int(2e2 + 1))
         run_id_range = range(1, 2)
@@ -41,6 +42,8 @@ class Master():
                 times["get_context"].append(time.clock() - s)
                 s = time.clock()
                 ad = recommender.get_ad(context)
+                price = recommender_price.get_ad(context, ad)
+                ad['price'] = price
                 times["get_ad"].append(time.clock() - s)
                 # print("recommend ad: {}".format(ad))
                 s = time.clock()
@@ -50,6 +53,7 @@ class Master():
                 profits.append(ad["price"] * user_reaction["effect"]["Success"])
                 s = time.clock()
                 recommender.learn_from(context, ad, user_reaction)
+                recommender_price.learn_form(context, ad, user_reaction)
                 times["learn_from"].append(time.clock() - s)
             t_run_end = time.clock()
             total_profits = sum(profits)
