@@ -106,14 +106,22 @@ class Master():
         # bookkeeping after experiment
         t_ex_end = time.clock()
         t_ex_total = t_ex_end - t_ex_start
+
         ex_total_profit = sum(global_profits)
         ex_mean_profit = float(ex_total_profit) / len(global_profits)
 
+        ex_mean_time = float(sum(global_times)) / len(global_times)
+
         # logging after experiment
         li("finished this experiment")
+
         li("total time taken:{}".format(t_ex_total))
+        li("mean time taken per run:{}".format(ex_mean_time))
+        li("standard error of time per run:{}".format("???"))
+
         li("total profit:{}".format(ex_total_profit))
         li("mean profit:{}".format(ex_mean_profit))
+        li("standard error of mean profit per run:{}".format("???"))
 
 
 
