@@ -55,36 +55,42 @@ class Master():
         for run_id in run_id_range:
             profits = []
             t_run_start = time.clock()
+            li("Starting r_id:{}".format(run_id))
             for interaction_id in interaction_range:
-                if interaction_id % 100 == 0:
-                    print("Running r_id {}, interaction {}".format(run_id, interaction_id))
+                li("Running r_id {}, interaction {}".format(run_id, interaction_id))
+
+                # get context
                 s = time.clock()
                 context = io.get_context(run_id, interaction_id)
                 times["get_context"].append(time.clock() - s)
+                li("context received:{}".format(context))
+
+                # get recommendation
                 s = time.clock()
                 ad = recommender.get_ad(context)
-                # price = recommender_price.get_ad(context, ad)
-                # ad['price'] = price
                 times["get_ad"].append(time.clock() - s)
-                # print("recommend ad: {}".format(ad))
+                li("recommend ad:{}".format(ad))
+
+                # get user reaction
                 s = time.clock()
                 user_reaction = io.get_user_reaction(run_id, interaction_id, ad)
                 times["get_user_reaction"].append(time.clock() - s)
-                # print("user reaction: {}".format(user_reaction))
+                li("user reaction:{}".format(user_reaction))
+
                 profits.append(ad["price"] * user_reaction["effect"]["Success"])
+
+                # update models
                 s = time.clock()
                 recommender.learn_from(context, ad, user_reaction)
-                # recommender_price.learn_form(context, ad, user_reaction)
                 times["learn_from"].append(time.clock() - s)
             t_run_end = time.clock()
             total_profits = sum(profits)
-            print("interactions: {}, final profit:{}".format(
-                interaction_id,
-                total_profits
-            ))
-            print("total time taken for this run: {}s".format(t_run_end - t_run_start))
+            li("finished r_id:{}".format(run_id))
+            li("total time taken for this run:{}s".format(t_run_end - t_run_start))
+            li("total profit for this run:{}".format(total_profits))
+            li("timings:")
             for key, value in times.iteritems():
-                print("timing mean:\t{}\t\t\t{}ms".format(key, sum(value)/len(value) * 1000))
+                li("timing mean:\t{}\t\t\t{}ms".format(key, sum(value)/len(value) * 1000))
 
     @staticmethod
     def set_up_logging():
