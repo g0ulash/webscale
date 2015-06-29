@@ -1,10 +1,13 @@
 __author__ = 'niklas'
 
+import logging
 import abc
 import operator
 import adspace
 import numpy as np
 from scipy.optimize import minimize_scalar
+
+logger = logging.getLogger()
 
 class AbstractRecommender():
     """
@@ -118,7 +121,7 @@ class BetaBinomialThompsonSampler(AbstractRecommender):
         all_ads = adspace.roll_adspace_into_list()
         for ad in all_ads:
             self.models.append(BetaBinomialModel(ad))
-        print("Sampler initialized. Using "+str(len(self.models))+" models")
+        logger.info("Sampler initialized. Using "+str(len(self.models))+" models")
 
     def find_model_for_ad(self, ad):
         for model in self.models:

@@ -31,11 +31,7 @@ class Master():
     @staticmethod
     def run():
         # logging functions
-        li, le = Master.set_up_logging()
-
-        # parts: i/o and the recommender
-        io = input_output.InputOutput()
-        recommender = ad_recommenders.BetaBinomialThompsonSampler()
+        li, le, root_logger = Master.set_up_logging()
 
         # experimental ranges
         interaction_range = list(range(1, int(2e2 + 1)))
@@ -48,8 +44,13 @@ class Master():
         li("t_ex_start:{}, first_r_id:{}, last_r_id:{}, n_interactions_per_r_id:{}".format(t_ex_start,
                                                                                            run_id_range[0],
                                                                                            run_id_range[-1],
-                                                                                           interaction_range[0],
-                                                                                           interaction_range[-1]))
+                                                                                           len(interaction_range)))
+
+        # parts: i/o and the recommender
+        io = input_output.InputOutput()
+        recommender = ad_recommenders.BetaBinomialThompsonSampler()
+
+        li("recommender module:{}".format(str(recommender)))
 
         for run_id in run_id_range:
             profits = []
@@ -90,6 +91,7 @@ class Master():
         # get logger + formatter
         log_formatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
         root_logger = logging.getLogger()
+        root_logger.setLevel(10)
 
         # file handler
         log_path = os.path.join(".", "logs")
@@ -108,7 +110,7 @@ class Master():
         li = root_logger.info
         le = root_logger.error
 
-        return li, le
+        return li, le, root_logger
 
 
 if __name__ == "__main__":
