@@ -63,7 +63,7 @@ class Master():
             ))
             print("total time taken for this run: {}s".format(t_run_end - t_run_start))
             for key, value in times.iteritems():
-                print("timing mean:\t{}\t{}ms".format(key, sum(value)/len(value) * 1000))
+                print("timing mean:\t{}\t\t\t{}ms".format(key, sum(value)/len(value) * 1000))
 
 if __name__ == "__main__":
     master = Master()
