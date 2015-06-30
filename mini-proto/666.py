@@ -62,7 +62,11 @@ class Master():
 
                 # get context
                 s = time.clock()
-                context = io.get_context(run_id, interaction_id)
+                try:
+                    context = io.get_context(run_id, interaction_id)
+                except urllib2.URLError:
+                    le("Error while getting the context, skipping to next")
+                    continue
                 times["get_context"].append(time.clock() - s)
                 li("context received:{}".format(context))
 
@@ -74,7 +78,11 @@ class Master():
 
                 # get user reaction
                 s = time.clock()
-                user_reaction = io.get_user_reaction(run_id, interaction_id, ad)
+                try:
+                    user_reaction = io.get_user_reaction(run_id, interaction_id, ad)
+                except urllib2.URLError:
+                    le("Error while getting the user reaction, skipping to next")
+                    continue
                 times["get_user_reaction"].append(time.clock() - s)
                 li("user reaction:{}".format(user_reaction))
 
@@ -119,6 +127,8 @@ class Master():
         li("total profit:{}".format(ex_total_profit))
         li("mean profit:{}".format(ex_mean_profit))
         li("standard error of mean profit per run:{}".format("???"))
+
+        li("This is a triumph")
 
     @staticmethod
     def set_up_logging():
