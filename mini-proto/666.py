@@ -18,8 +18,6 @@ This is a minimal prototype. Let's see how we can get some data, do stupid recom
 """
 
 
-
-
 class Master():
     """
     This class controls all other moving parts, passing data to where it should be
@@ -29,13 +27,13 @@ class Master():
         pass
 
     @staticmethod
-    def run():
+    def run(rid_start, rid_end, iid_start, iid_end, recommender):
         # logging functions
         li, le, root_logger = Master.set_up_logging()
 
         # experimental ranges
-        interaction_range = list(range(1, int(2e2 + 1)))
-        run_id_range = list(range(1, 2))
+        run_id_range = list(range(rid_start, rid_end))
+        interaction_range = list(range(iid_start, iid_end))
 
         # timing bins
         times = {"get_context": [], "get_ad": [], "get_user_reaction": [], "learn_from": []}
@@ -46,9 +44,8 @@ class Master():
                                                                                            run_id_range[-1],
                                                                                            len(interaction_range)))
 
-        # parts: i/o and the recommender
+        # parts: i/o
         io = input_output.InputOutput()
-        recommender = ad_recommenders.BetaBinomialThompsonSampler()
 
         li("recommender module:{}".format(str(recommender)))
 
@@ -101,7 +98,7 @@ class Master():
             li("total profit for this run:{}".format(total_profits))
             li("timings:")
             for key, value in times.iteritems():
-                li("timing mean:\t{}\t\t\t{}ms".format(key, sum(value)/len(value) * 1000))
+                li("timing mean:\t{}\t\t\t{}ms".format(key, sum(value) / len(value) * 1000))
 
         # bookkeeping after experiment
         t_ex_end = time.clock()
@@ -123,8 +120,6 @@ class Master():
         li("mean profit:{}".format(ex_mean_profit))
         li("standard error of mean profit per run:{}".format("???"))
 
-
-
     @staticmethod
     def set_up_logging():
         # get logger + formatter
@@ -135,7 +130,7 @@ class Master():
         # file handler
         log_path = os.path.join(".", "logs")
         t_stamp = str(datetime.datetime.now()).replace(":", "_")
-        log_file_path = os.path.join(log_path, "experiment_"+t_stamp+".log")
+        log_file_path = os.path.join(log_path, "experiment_" + t_stamp + ".log")
         file_handler = logging.FileHandler(log_file_path)
         file_handler.setFormatter(log_formatter)
         root_logger.addHandler(file_handler)
@@ -154,4 +149,7 @@ class Master():
 
 if __name__ == "__main__":
     master = Master()
-    master.run()
+    master.run(rid_start=1, rid_end=2, iid_start=1, iid_end=1e5 + 1,
+               recommender=ad_recommenders.BetaBinomialThompsonSampler())
+    master.run(rid_start=1, rid_end=2, iid_start=1, iid_end=1e5 + 1,
+               recommender=ad_recommenders.RandomRecommender())
