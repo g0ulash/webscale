@@ -132,7 +132,7 @@ class BetaBinomialThompsonSampler(AbstractRecommender):
 
 class BootStrapThompson(AbstractRecommender):
     def get_ad(self, context, ad):
-        row = np.random.choice(self.params.shape[0])
+        row = np.random.choice(self.betas.shape[0])
         beta = self.betas[row,:]
         result = minimize_scalar(f, args=(context, ad, beta), bounds=(0,50), method="bounded")
         return result.x
@@ -141,12 +141,16 @@ class BootStrapThompson(AbstractRecommender):
         for i, val in enumerate(self.params):
             if np.random.binomial(1,.5,1) == 1:
                 # Create feature vector from results should be same as in function f
-                feature_vector = []
-                x = np.matrix(feature_vector(x, context, ad)).T
-                B = np.matrix(self.betas).T
+                dummys = product_id_to_dummy(ad)
+                age = float(context["Age"])
+                price = float(ad["price"])
+                y = float(result["effect"]["Success"])
+                x = [1, price, price**2, age, age*price, age*price**2, dummys[0]*price, dummys[1]*price, dummys[2]*price, dummys[3]*price, dummys[4]*price, dummys[5]*price, dummys[6]*price, dummys[7]*price, dummys[8]*price, dummys[9]*price, dummys[10]*price, dummys[11]*price, dummys[12]*price, dummys[13]*price, dummys[14]*price, dummys[15]*price]
+                x = np.matrix(x).T
+                B = np.matrix(self.betas[i,:]).T
                 p = 1. / (1. + np.exp(-1*B.T*x))
-                B = B + alpha*np.float_(y-p)*x - np.insert(gamma*2*mu*B[1:],0,0)
-                self.params[i,:] = np.array(B.T)[0,:]
+                B = B + self.alpha*np.float_(y-p)*x - np.insert(self.alpha*2*self.mu*B[1:],0,0)
+                self.betas[i,:] = np.array(B.T)[0,:]
 
     def __init__(self, params, J = 100):
         self.J = J
@@ -156,13 +160,24 @@ class BootStrapThompson(AbstractRecommender):
         self.mu = 0.01
         i = 0
         for pars in self.params:
-            values = np.random.normal(x, .1, J)
+            values = np.random.normal(pars, .1, J)
             self.betas[:,i] = values
             i += 1
 
 
-def f(x, context, ad, betas):
+def f(x, context, ad, betass):
     # CREATE FEATURE VECTOR FROM CONTEXT AND AD
     # SHOULD BE SAME AS IN LEARN_FROM
-    feature_vector = []
-    return -1.*x*(1./(1.*(np.exp(-1*self.feature_vector*betas.T))))
+    dummys = product_id_to_dummy(ad)
+    betass = betass.shape[0]
+    feature_vector = [1, x, x**2, context['Age'], context['Age']*x, context['Age']*x**2, dummys[0]*x, dummys[1]*x, dummys[2]*x, dummys[3]*x, dummys[4]*x, dummys[5]*x, dummys[6]*x, dummys[7]*x, dummys[8]*x, dummys[9]*x, dummys[10]*x, dummys[11]*x, dummys[12]*x, dummys[13]*x, dummys[14]*x, dummys[15]*x]
+    return -1.*x*(1./(1.*(np.exp(-1*feature_vector*betass))))
+
+def product_id_to_dummy(ad):
+    dummys = []
+    for i in range(0,16):
+        if (ad['productid'] - 10) == i:
+            dummys.append(1)
+        else:
+            dummys.append(0)
+    return dummys
