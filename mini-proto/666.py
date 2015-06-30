@@ -52,6 +52,7 @@ class Master():
         # variables valid for all of the experiment
         global_profits = []
         global_times = []
+        errors = 0
 
         for run_id in run_id_range:
             profits = []
@@ -66,6 +67,7 @@ class Master():
                     context = io.get_context(run_id, interaction_id)
                 except urllib2.URLError:
                     le("Error while getting the context, skipping to next")
+                    errors += 1
                     continue
                 times["get_context"].append(time.clock() - s)
                 li("context received:{}".format(context))
@@ -82,6 +84,7 @@ class Master():
                     user_reaction = io.get_user_reaction(run_id, interaction_id, ad)
                 except urllib2.URLError:
                     le("Error while getting the user reaction, skipping to next")
+                    errors += 1
                     continue
                 times["get_user_reaction"].append(time.clock() - s)
                 li("user reaction:{}".format(user_reaction))
@@ -119,6 +122,8 @@ class Master():
 
         # logging after experiment
         li("finished this experiment")
+
+        li("Errors encountered:{}".format(errors))
 
         li("total time taken:{}".format(t_ex_total))
         li("mean time taken per run:{}".format(ex_mean_time))
