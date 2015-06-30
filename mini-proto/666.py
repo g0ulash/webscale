@@ -149,7 +149,7 @@ class Master():
 
 if __name__ == "__main__":
     master = Master()
-    master.run(rid_start=1, rid_end=2, iid_start=1, iid_end=1e5 + 1,
+    master.run(rid_start=1, rid_end=2, iid_start=1, iid_end=int(1e5 + 1),
                recommender=ad_recommenders.BetaBinomialThompsonSampler())
-    master.run(rid_start=1, rid_end=2, iid_start=1, iid_end=1e5 + 1,
+    master.run(rid_start=1, rid_end=2, iid_start=1, iid_end=int(1e5 + 1),
                recommender=ad_recommenders.RandomRecommender())
