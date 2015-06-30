@@ -83,7 +83,7 @@ class SQLiteCache(AbstractCache):
         q = "INSERT INTO contexts VALUES (:run_id,:interaction_id,:Age,:Agent,:ID,:Language,:Referer)"
         self.conn.execute(q, cc)
         self.conn.commit()
-        logging.getLogger().info("Context written to SQLite cache")
+        logging.getLogger().debug("Context written to SQLite cache")
 
     def get_context(self, run_id, interaction_id):
         cursor = self.conn.execute("SELECT * FROM contexts WHERE run_id=:run_id AND interaction_id=:interaction_id",
@@ -91,9 +91,9 @@ class SQLiteCache(AbstractCache):
                                     "interaction_id": interaction_id})
         context = cursor.fetchone()
         if context is not None:
-            logging.getLogger().info("Cache hit for context")
+            logging.getLogger().debug("Cache hit for context")
         else:
-            logging.getLogger().info("Cache miss for context")
+            logging.getLogger().debug("Cache miss for context")
         return context
 
     def get_click(self, run_id, interaction_id, ad):

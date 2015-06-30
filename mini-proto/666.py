@@ -28,8 +28,12 @@ class Master():
 
     @staticmethod
     def run(rid_start, rid_end, iid_start, iid_end, recommender):
-        # logging functions
-        li, le, root_logger = Master.set_up_logging()
+        # set up logging
+        root_logger = logging.getLogger()
+        # convenience functions
+        li = root_logger.info
+        le = root_logger.error
+        ld = root_logger.debug
 
         # experimental ranges
         run_id_range = list(range(rid_start, rid_end))
@@ -59,7 +63,12 @@ class Master():
             t_run_start = time.clock()
             li("Starting r_id:{}".format(run_id))
             for interaction_id in interaction_range:
-                li("Running r_id {}, interaction {}".format(run_id, interaction_id))
+                # every 100 interactions: log message visible on terminal
+                if interaction_id % 100 == 0:
+                    lf = li
+                else:
+                    lf = ld
+                lf("Running r_id {}, interaction {}".format(run_id, interaction_id))
 
                 # get context
                 s = time.clock()
@@ -70,13 +79,13 @@ class Master():
                     errors += 1
                     continue
                 times["get_context"].append(time.clock() - s)
-                li("context received:{}".format(context))
+                ld("context received:{}".format(context))
 
                 # get recommendation
                 s = time.clock()
                 ad = recommender.get_ad(context)
                 times["get_ad"].append(time.clock() - s)
-                li("recommend ad:{}".format(ad))
+                ld("recommend ad:{}".format(ad))
 
                 # get user reaction
                 s = time.clock()
@@ -87,7 +96,7 @@ class Master():
                     errors += 1
                     continue
                 times["get_user_reaction"].append(time.clock() - s)
-                li("user reaction:{}".format(user_reaction))
+                ld("user reaction:{}".format(user_reaction))
 
                 profits.append(ad["price"] * user_reaction["effect"]["Success"])
 
@@ -129,42 +138,60 @@ class Master():
         li("mean time taken per run:{}".format(ex_mean_time))
         li("standard error of time per run:{}".format("???"))
 
-        li("total profit:{}".format(ex_total_profit))
-        li("mean profit:{}".format(ex_mean_profit))
+        li("total profit:{} Galactic Credits".format(ex_total_profit))
+        li("mean profit:{} Galactic Credits".format(ex_mean_profit))
         li("standard error of mean profit per run:{}".format("???"))
 
         li("This is a triumph")
 
-    @staticmethod
-    def set_up_logging():
+
+class LogAdmin():
+
+    def __init__(self):
+        self.root_logger = None
+        self.log_formatter = None
+        self.file_handler = None
+        self.console_handler = None
+
+    def set_up_logging(self):
         # get logger + formatter
         log_formatter = logging.Formatter("%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s")
         root_logger = logging.getLogger()
         root_logger.setLevel(10)
+        self.log_formatter = log_formatter
+        self.root_logger = root_logger
 
         # file handler
-        log_path = os.path.join(".", "logs")
-        t_stamp = str(datetime.datetime.now()).replace(":", "_")
-        log_file_path = os.path.join(log_path, "experiment_" + t_stamp + ".log")
-        file_handler = logging.FileHandler(log_file_path)
-        file_handler.setFormatter(log_formatter)
-        root_logger.addHandler(file_handler)
+        self.attach_new_log_file()
 
         # console handler
         console_handler = logging.StreamHandler(stream=sys.stdout)
         console_handler.setFormatter(log_formatter)
+        console_handler.setLevel(20)
         root_logger.addHandler(console_handler)
+        self.console_handler = console_handler
 
-        # convenience functions
-        li = root_logger.info
-        le = root_logger.error
+        return root_logger
 
-        return li, le, root_logger
+    def attach_new_log_file(self):
+        if self.file_handler is not None:
+            self.root_logger.removeHandler(self.file_handler)
+            self.file_handler = None
+        log_path = os.path.join(".", "logs")
+        t_stamp = str(datetime.datetime.now()).replace(":", "_")
+        log_file_path = os.path.join(log_path, "experiment_" + t_stamp + ".log")
+        file_handler = logging.FileHandler(log_file_path)
+        file_handler.setFormatter(self.log_formatter)
+        self.root_logger.addHandler(file_handler)
+        self.file_handler = file_handler
 
 
 if __name__ == "__main__":
+    la = LogAdmin()
+    rl = la.set_up_logging()
     master = Master()
-    master.run(rid_start=1, rid_end=2, iid_start=1, iid_end=int(1e5 + 1),
+    master.run(rid_start=1, rid_end=2, iid_start=1, iid_end=int(1e3 + 1),
                recommender=ad_recommenders.BetaBinomialThompsonSampler())
-    master.run(rid_start=1, rid_end=2, iid_start=1, iid_end=int(1e5 + 1),
+    la.attach_new_log_file()
+    master.run(rid_start=1, rid_end=2, iid_start=1, iid_end=int(1e3 + 1),
                recommender=ad_recommenders.RandomRecommender())
