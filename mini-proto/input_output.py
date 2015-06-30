@@ -5,7 +5,7 @@ import urllib2
 import abc
 from abc import abstractmethod
 import sqlite3
-
+import logging
 
 __author__ = 'niklas'
 
@@ -74,6 +74,7 @@ class SQLiteCache(AbstractCache):
         columns = "(run_id integer, interaction_id integer, Age integer, Agent text, ID integer, Language text, Referer text)"
         q = "CREATE TABLE IF NOT EXISTS contexts {}".format(columns)
         self.conn.execute(q)
+        logging.getLogger().info("SQLite cache set up")
 
     def set_context(self, run_id, interaction_id, context):
         cc = copy.copy(context)
@@ -82,9 +83,18 @@ class SQLiteCache(AbstractCache):
         q = "INSERT INTO contexts VALUES (:run_id,:interaction_id,:Age,:Agent,:ID,:Language,:Referer)"
         self.conn.execute(q, cc)
         self.conn.commit()
+        logging.getLogger().info("Context written to SQLite cache")
 
     def get_context(self, run_id, interaction_id):
-        pass
+        cursor = self.conn.execute("SELECT * FROM contexts WHERE run_id=:run_id AND interaction_id=:interaction_id",
+                                   {"run_id": run_id,
+                                    "interaction_id": interaction_id})
+        context = cursor.fetchone()
+        if context is not None:
+            logging.getLogger().info("Cache hit for context")
+        else:
+            logging.getLogger().info("Cache miss for context")
+        return context
 
     def get_click(self, run_id, interaction_id, ad):
         pass
