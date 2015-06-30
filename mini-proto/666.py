@@ -190,8 +190,8 @@ if __name__ == "__main__":
     la = LogAdmin()
     rl = la.set_up_logging()
     master = Master()
-    master.run(rid_start=1, rid_end=2, iid_start=1, iid_end=int(1e3 + 1),
-               recommender=ad_recommenders.BetaBinomialThompsonSampler())
-    la.attach_new_log_file()
-    master.run(rid_start=1, rid_end=2, iid_start=1, iid_end=int(1e3 + 1),
-               recommender=ad_recommenders.RandomRecommender())
+    master.run(rid_start=1, rid_end=50, iid_start=1, iid_end=int(1e5 + 1),
+               recommender=ad_recommenders.CombineBBBTS([-1, 0.5, 0.005, 0.5, 0.005, 0.005, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025]))
+    # Run this one for test set!  
+    #master.run(rid_start=10001, rid_end=10050, iid_start=1, iid_end=int(1e5 + 1), recommender=ad_recommenders.CombineBBBTS([-1, 0.5, 0.005, 0.5, 0.005, 0.005, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025]))
+               

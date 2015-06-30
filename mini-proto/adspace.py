@@ -15,7 +15,7 @@ possible_values = {
     "productid": list(range(10, 26)),
     # normally: [float(base) + float(decimal)/100 for base in range(0, 25) for decimal in range(0, 100)] + [25]
     # but: same bug, see above. keep until further notice
-    "price": list(range(0, 50))
+    #"price": list(range(0, 50))
 }
 
 

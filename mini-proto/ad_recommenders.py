@@ -181,3 +181,21 @@ def product_id_to_dummy(ad):
         else:
             dummys.append(0)
     return dummys
+
+class CombineBBBTS(AbstractRecommender):
+
+    def get_ad(self, context):
+        ad = self.recommender_bb.get_ad(context)
+        price = self.recommender_bts.get_ad(context, ad)
+        ad['price'] = price
+        return price
+	
+    def learn_from(self, context, ad, result):
+        self.recommender_bts.learn_from(context, ad, result)
+        ad.pop("price",None)
+        self.recommender_bb.learn_from(context, ad, result)
+	
+    def __init__(self, params):
+        self.recommender_bts = BootStrapThompson(params)
+        self.recommender_bb = BetaBinomialThompsonSampler()
+        
